@@ -3,17 +3,34 @@
     <div class="logo">Просто купить</div>
     <nav class="nav">
       <router-link to="/">Главная</router-link>
-      <router-link to="/register">Регистрация</router-link>
-      <router-link to="/login">Вход</router-link>
-      <router-link to="/cart">Корзина</router-link>
-      <router-link to="/orders">Заказы</router-link>
+      <template v-if="isAuthenticated">
+        <router-link to="/cart">Корзина</router-link>
+        <router-link to="/orders">Заказы</router-link>
+      </template>
+      <template v-if="!isAuthenticated">
+        <router-link to="/register">Регистрация</router-link>
+        <router-link to="/login">Вход</router-link>
+      </template>
+      <template v-else>
+        <button @click="handleLogout" class="btn-logout">Выйти</button>
+      </template>
     </nav>
   </header>
 </template>
 
-<script>
-export default {
-  name: 'Header',
+<script setup>
+import { computed } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+
+const store = useStore();
+const router = useRouter();
+
+const isAuthenticated = computed(() => store.getters.isAuthenticated);
+
+const handleLogout = () => {
+  store.commit('clearToken');
+  router.push('/login');
 };
 </script>
 
@@ -39,6 +56,18 @@ export default {
 }
 
 .nav a:hover {
+  text-decoration: underline;
+}
+
+.btn-logout {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  margin-left: 1rem;
+}
+
+.btn-logout:hover {
   text-decoration: underline;
 }
 </style>

@@ -1,15 +1,21 @@
 import { createStore } from 'vuex';
 
+const getStoredToken = () => {
+  return localStorage.getItem('userToken') || null;
+};
+
 export default createStore({
   state: {
-    token: null,
+    token: getStoredToken(),
   },
   mutations: {
     setToken(state, token) {
       state.token = token;
+      localStorage.setItem('userToken', token);
     },
     clearToken(state) {
       state.token = null;
+      localStorage.removeItem('userToken');
     },
   },
   actions: {
@@ -22,7 +28,7 @@ export default createStore({
   },
   getters: {
     isAuthenticated(state) {
-      return !!state.token;
+      return state.token;
     },
   },
 });

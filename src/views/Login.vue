@@ -1,10 +1,10 @@
 <template>
-  <div class="register">
-    <h2>Регистрация</h2>
+  <div class="login">
+    <h2>Вход в систему</h2>
     <AuthForm
         :fields="fields"
-        buttonText="Зарегистрироваться"
-        :onSubmit="handleRegister"
+        buttonText="Войти"
+        :onSubmit="handleLogin"
     />
     <p v-if="error" class="error">{{ error }}</p>
   </div>
@@ -17,7 +17,6 @@ import { useStore } from 'vuex';
 import AuthForm from '../components/AuthForm.vue';
 
 const fields = [
-  { name: 'fio', label: 'ФИО', type: 'text', required: true },
   { name: 'email', label: 'Email', type: 'email', required: true },
   { name: 'password', label: 'Пароль', type: 'password', required: true },
 ];
@@ -26,9 +25,9 @@ const error = ref('');
 const router = useRouter();
 const store = useStore();
 
-const handleRegister = async (formData) => {
+const handleLogin = async (formData) => {
   try {
-    const response = await fetch('http://lifestealer86.ru/api-shop/signup', {
+    const response = await fetch('http://lifestealer86.ru/api-shop/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -40,9 +39,9 @@ const handleRegister = async (formData) => {
 
     if (response.ok) {
       store.commit('setToken', data.data.user_token);
-      router.push('/login');
+      router.push('/');
     } else {
-      error.value = data.error?.message || 'Ошибка регистрации';
+      error.value = data.error?.message || 'Ошибка входа';
     }
   } catch (err) {
     error.value = 'Ошибка сети';
@@ -51,7 +50,7 @@ const handleRegister = async (formData) => {
 </script>
 
 <style scoped>
-.register {
+.login {
   max-width: 400px;
   margin: 2rem auto;
   padding: 2rem;

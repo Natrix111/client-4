@@ -5,15 +5,19 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { onMounted } from 'vue';
+import { useStore } from 'vuex';
 import Header from './components/Header.vue';
 
-export default {
-  name: 'App',
-  components: {
-    Header,
-  },
-};
+const store = useStore();
+
+onMounted(() => {
+  const token = localStorage.getItem('userToken');
+  if (token) {
+    store.commit('setToken', token);
+  }
+});
 </script>
 
 <style>
