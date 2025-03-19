@@ -3,10 +3,8 @@
     <div class="logo">Просто купить</div>
     <nav class="nav">
       <router-link to="/">Главная</router-link>
-      <template v-if="isAuthenticated">
-        <router-link to="/cart">Корзина</router-link>
-        <router-link to="/orders">Заказы</router-link>
-      </template>
+      <router-link v-if="isAuthenticated" to="/cart">Корзина</router-link>
+      <router-link v-if="isAuthenticated" to="/orders">Заказы</router-link>
       <template v-if="!isAuthenticated">
         <router-link to="/register">Регистрация</router-link>
         <router-link to="/login">Вход</router-link>
@@ -60,14 +58,13 @@ const handleLogout = () => {
 }
 
 .btn-logout {
-  background: none;
+  background: red;
   border: none;
+  border-radius: 15px;
+  padding: 0.5rem;
   color: white;
   cursor: pointer;
   margin-left: 1rem;
 }
 
-.btn-logout:hover {
-  text-decoration: underline;
-}
 </style>
