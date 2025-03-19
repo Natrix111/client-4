@@ -1,14 +1,28 @@
-import { createStore } from 'vuex'
+import { createStore } from 'vuex';
 
 export default createStore({
   state: {
-  },
-  getters: {
+    token: null,
   },
   mutations: {
+    setToken(state, token) {
+      state.token = token;
+    },
+    clearToken(state) {
+      state.token = null;
+    },
   },
   actions: {
+    login({ commit }, token) {
+      commit('setToken', token);
+    },
+    logout({ commit }) {
+      commit('clearToken');
+    },
   },
-  modules: {
-  }
-})
+  getters: {
+    isAuthenticated(state) {
+      return !!state.token;
+    },
+  },
+});
