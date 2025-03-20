@@ -1,7 +1,6 @@
 <template>
   <div class="cart">
     <h2>Корзина</h2>
-    <button @click="goBack" class="btn-back">Назад</button>
     <div v-if="loading">Загрузка...</div>
     <div v-else>
       <div v-if="cartItems.length === 0">Корзина пуста</div>
@@ -133,7 +132,7 @@ const removeGroup = async (productId) => {
 
 const placeOrder = async () => {
   try {
-    const response = await fetch('http://lifestealer86.ru/api-shop/orders', {
+    const response = await fetch('http://lifestealer86.ru/api-shop/order', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token.value}`,
@@ -141,18 +140,19 @@ const placeOrder = async () => {
       },
     });
 
+    const data = await response.json();
+
     if (response.ok) {
+      alert('Заказ успешно оформлен');
       router.push('/orders');
+    } else if (response.status === 422) {
+      alert('Ошибка: корзина пуста');
     } else {
-      console.error('Ошибка при оформлении заказа');
+      console.error('Ошибка при оформлении заказа:', data.error?.message);
     }
   } catch (err) {
     console.error('Ошибка сети:', err);
   }
-};
-
-const goBack = () => {
-  router.push('/');
 };
 
 onMounted(() => {
