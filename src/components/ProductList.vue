@@ -9,7 +9,7 @@
           <h3>{{ product.name }}</h3>
           <p>{{ product.description }}</p>
           <p class="price">Цена: {{ product.price }} ₽</p>
-          <button v-if="isClient" @click="addToCart(product)" class="btn-add-to-cart">
+          <button v-if="isClient" @click="addToCart(product.id)" class="btn-add-to-cart">
             Добавить в корзину
           </button>
         </div>
@@ -26,6 +26,7 @@ const store = useStore();
 const products = ref([]);
 const loading = ref(true);
 
+// Получаем URL изображения
 const getImageUrl = (imagePath) => {
   return `http://lifestealer86.ru/${imagePath}`;
 };
@@ -50,8 +51,26 @@ const fetchProducts = async () => {
   }
 };
 
-const addToCart = (product) => {
-  console.log('Товар добавлен в корзину:', product);
+const addToCart = async (productId) => {
+  try {
+    const response = await fetch(`http://lifestealer86.ru/api-shop/cart/${productId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${store.state.token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert('Товар добавлен в корзину');
+    } else {
+      console.error('Ошибка при добавлении товара в корзину:', data.error?.message);
+    }
+  } catch (err) {
+    console.error('Ошибка сети:', err);
+  }
 };
 
 onMounted(() => {

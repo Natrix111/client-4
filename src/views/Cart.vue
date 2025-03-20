@@ -1,6 +1,7 @@
 <template>
   <div class="cart">
     <h2>Корзина</h2>
+    <button @click="goBack" class="btn-back">Назад</button>
     <div v-if="loading">Загрузка...</div>
     <div v-else>
       <div v-if="cartItems.length === 0">Корзина пуста</div>
@@ -10,11 +11,14 @@
           <p>{{ group[0].description }}</p>
           <p class="price">Цена: {{ group[0].price }} ₽</p>
           <div class="quantity-controls">
-            <button @click="decreaseQuantity(group[0].product_id)" class="btn-quantity">-</button>
+            <button @click="decreaseQuantity(group[0].id)" class="btn-quantity">-</button>
             <span>{{ group.length }}</span>
             <button @click="increaseQuantity(group[0].product_id)" class="btn-quantity">+</button>
           </div>
-          <button @click="removeFromCart(group[0].product_id)" class="btn-remove">Удалить</button>
+          <button @click="removeGroup(group[0].product_id)" class="btn-remove">Удалить все</button>
+        </div>
+        <div class="total-price">
+          <strong>Общая сумма: {{ totalPrice }} ₽</strong>
         </div>
         <button @click="placeOrder" class="btn-order">Оформить заказ</button>
       </div>
@@ -67,6 +71,10 @@ const groupedCartItems = computed(() => {
   return groups;
 });
 
+const totalPrice = computed(() => {
+  return cartItems.value.reduce((total, item) => total + item.price, 0);
+});
+
 const increaseQuantity = async (productId) => {
   try {
     const response = await fetch(`http://lifestealer86.ru/api-shop/cart/${productId}`, {
@@ -87,14 +95,9 @@ const increaseQuantity = async (productId) => {
   }
 };
 
-const decreaseQuantity = async (productId) => {
-  console.log('Уменьшение количества товара:', productId);
-};
-
-// Удаляем товар из корзины
-const removeFromCart = async (productId) => {
+const decreaseQuantity = async (itemId) => {
   try {
-    const response = await fetch(`http://lifestealer86.ru/api-shop/cart/${productId}`, {
+    const response = await fetch(`http://lifestealer86.ru/api-shop/cart/${itemId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token.value}`,
@@ -104,8 +107,25 @@ const removeFromCart = async (productId) => {
     if (response.ok) {
       await fetchCart();
     } else {
-      console.error('Ошибка при удалении товара');
+      console.error('Ошибка при уменьшении количества товара');
     }
+  } catch (err) {
+    console.error('Ошибка сети:', err);
+  }
+};
+
+const removeGroup = async (productId) => {
+  try {
+    const itemsToRemove = cartItems.value.filter((item) => item.product_id === productId);
+    for (const item of itemsToRemove) {
+      await fetch(`http://lifestealer86.ru/api-shop/cart/${item.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token.value}`,
+        },
+      });
+    }
+    await fetchCart();
   } catch (err) {
     console.error('Ошибка сети:', err);
   }
@@ -129,6 +149,10 @@ const placeOrder = async () => {
   } catch (err) {
     console.error('Ошибка сети:', err);
   }
+};
+
+const goBack = () => {
+  router.push('/');
 };
 
 onMounted(() => {
@@ -212,5 +236,10 @@ onMounted(() => {
 
 .btn-back:hover {
   background-color: #ccc;
+}
+
+.total-price {
+  margin-top: 1rem;
+  font-size: 1.2rem;
 }
 </style>
