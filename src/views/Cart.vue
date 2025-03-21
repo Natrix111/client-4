@@ -3,12 +3,13 @@
     <h2>Корзина</h2>
     <div v-if="loading">Загрузка...</div>
     <div v-else>
-      <div v-if="cartItems.length === 0">Корзина пуста</div>
+      <div v-if="cartItems.length === 0" class="empty-cart">Корзина пуста</div>
       <div v-else>
         <div v-for="(group, productId) in groupedCartItems" :key="productId" class="cart-item">
-          <h3>{{ group[0].name }}</h3>
-          <p>{{ group[0].description }}</p>
-          <p class="price">Цена: {{ group[0].price }} ₽</p>
+          <div class="item-info">
+            <h3>{{ group[0].name }}</h3>
+            <p class="price">Цена: {{ group[0].price }} ₽</p>
+          </div>
           <div class="quantity-controls">
             <button @click="decreaseQuantity(group[0].id)" class="btn-quantity">-</button>
             <span>{{ group.length }}</span>
@@ -16,10 +17,12 @@
           </div>
           <button @click="removeGroup(group[0].product_id)" class="btn-remove">Удалить все</button>
         </div>
-        <div class="total-price">
-          <strong>Общая сумма: {{ totalPrice }} ₽</strong>
+        <div class="summary">
+          <div class="total-price">
+            <strong>Общая сумма: {{ totalPrice }} ₽</strong>
+          </div>
+          <button @click="placeOrder" class="btn-order">Оформить заказ</button>
         </div>
-        <button @click="placeOrder" class="btn-order">Оформить заказ</button>
       </div>
     </div>
   </div>
@@ -163,13 +166,32 @@ onMounted(() => {
 <style scoped>
 .cart {
   padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.empty-cart {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #666;
 }
 
 .cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1rem;
+  background-color: #f9f9f9;
+}
+
+.item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
 }
 
 .price {
@@ -181,7 +203,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin: 1rem 0;
+  margin: 0 1rem;
 }
 
 .btn-quantity {
@@ -191,6 +213,7 @@ onMounted(() => {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 1rem;
 }
 
 .btn-quantity:hover {
@@ -204,42 +227,42 @@ onMounted(() => {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 1rem;
 }
 
 .btn-remove:hover {
   background-color: #ff1a1a;
 }
 
+.summary {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 2px solid #ddd;
+  text-align: right;
+}
+
+.total-price {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
 .btn-order {
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 2rem;
   background-color: #4CAF50;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  margin-top: 1rem;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
 }
 
 .btn-order:hover {
   background-color: #45a049;
 }
 
-.btn-back {
-  padding: 0.5rem 1rem;
-  background-color: #ddd;
-  color: #333;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-bottom: 1rem;
-}
-
-.btn-back:hover {
+.btn-order:disabled {
   background-color: #ccc;
-}
-
-.total-price {
-  margin-top: 1rem;
-  font-size: 1.2rem;
+  cursor: not-allowed;
 }
 </style>
